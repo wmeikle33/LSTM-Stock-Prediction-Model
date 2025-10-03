@@ -1,2 +1,3 @@
-# LSTM Stock Predictor (Sample / Redacted)
-See README for usage instructions in the repo. This is a repo for a program I designed during my time at SemiLEDs, because the larger program is proprietary I only use a small sample code here as an example.
+This repository is a public, redaction‑safe sample of a company program that employs a LSTM based neural network to analyze time series data related to stocks. It demonstrates sample code without exposing any proprietary logic.
+
+✅ You can share this repo publicly. Proprietary parsing rules, vendor/OCR config, and corp data are not included.
