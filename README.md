@@ -10,8 +10,6 @@ lstm-stock-prediction-model/
 ├── scripts/               # CLI entrypoints: train/predict
 ├── notebooks/             # original notebook + exported .py
 ├── data/raw/              # place raw data here (gitignored)
-├── models/                # saved models (gitignored)
-├── reports/figures/       # plots (gitignored)
 ├── tests/                 # add unit tests if needed
 ├── requirements.txt
 └── README.md
