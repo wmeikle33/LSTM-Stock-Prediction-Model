@@ -40,7 +40,7 @@ lstm-stock-prediction-model/
 ├── src/                   # reusable code (data, features, model)
 ├── scripts/               # CLI entrypoints: train/predict
 ├── notebooks/             # original notebook + exported .py
-├── data/raw/              # place raw data here (gitignored)
+├── sample_data             # place raw data here (gitignored)
 ├── tests/                 # add unit tests if needed
 ├── requirements.txt
 └── README.md
