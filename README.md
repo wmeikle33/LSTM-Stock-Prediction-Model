@@ -14,6 +14,19 @@ source .venv/bin/activate
 
 pip install -U pip
 pip install -e ".[dev]"
+
+python -m scripts.train \
+  --data sample_data/prices.csv \
+  --target Close \
+  --window 60 \
+  --horizon 1 \
+  --epochs 10 \
+  --outdir outputs
+
+python -m scripts.predict \
+  --model outputs/model \
+  --data sample_data/prices.csv \
+  --outdir outputs
 ```
 
 This repository is a public, redaction‑safe sample of a company program that employs a LSTM based neural network to analyze time series data related to stocks. It demonstrates sample code without exposing any proprietary logic.
