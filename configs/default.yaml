@@ -1,1 +1,16 @@
+data:
+  file: sample_data/prices.csv
+  target: Close
 
+model:
+  lstm_layers: 2
+  hidden_size: 128
+
+train:
+  window: 60
+  horizon: 1
+  batch_size: 64
+  epochs: 50
+
+outputs:
+  dir: outputs/
