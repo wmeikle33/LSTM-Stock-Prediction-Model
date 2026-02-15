@@ -45,3 +45,14 @@ lstm-stock-prediction-model/
 ├── requirements.txt
 └── README.md
 ```
+
+## Disclaimer
+
+This project is for educational and research purposes only.
+
+- It is **not financial advice**.
+- It is **not intended for live trading or investment decisions**.
+- Historical performance shown in this repository does **not guarantee future results**.
+- Any reported performance does **not account for transaction costs, slippage, liquidity constraints, or market impact** unless explicitly stated.
+
+Financial markets are complex and inherently unpredictable. Use this code at your own risk.
