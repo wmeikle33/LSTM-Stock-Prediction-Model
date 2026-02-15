@@ -1,4 +1,19 @@
+
 ## Quickstart
+
+### 1) Setup
+```bash
+git clone https://github.com/wmeikle33/LSTM-Stock-Prediction-Model.git
+cd LSTM-Stock-Prediction-Model
+
+python -m venv .venv
+# macOS/Linux
+source .venv/bin/activate
+# Windows
+# .venv\Scripts\activate
+
+pip install -U pip
+pip install -e ".[dev]"
 
 This repository is a public, redaction‑safe sample of a company program that employs a LSTM based neural network to analyze time series data related to stocks. It demonstrates sample code without exposing any proprietary logic.
 
