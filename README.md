@@ -14,6 +14,7 @@ source .venv/bin/activate
 
 pip install -U pip
 pip install -e ".[dev]"
+```
 
 This repository is a public, redaction‑safe sample of a company program that employs a LSTM based neural network to analyze time series data related to stocks. It demonstrates sample code without exposing any proprietary logic.
 
