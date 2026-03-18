@@ -10,7 +10,7 @@ dependencies = [
     "pandas",
     "scikit-learn",
     "matplotlib",
-    "torch"
+    "tensorflow"
 ]
 
 [project.scripts]
