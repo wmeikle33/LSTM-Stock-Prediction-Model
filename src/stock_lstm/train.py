@@ -5,17 +5,11 @@ def train(data_path: str, target: str, window: int, horizon: int, epochs: int, o
     outdir = Path(outdir)
     outdir.mkdir(parents=True, exist_ok=True)
 
-    # TODO: replace this with your actual training pipeline
-    # e.g., load data -> build dataset -> train model -> save artifacts
     print("Training with:")
     print(f"  data={data_path}")
     print(f"  target={target}")
     print(f"  window={window}, horizon={horizon}, epochs={epochs}")
     print(f"  outdir={outdir}")
-
-    # Example artifact placeholders:
-    # (outdir / "metrics.json").write_text(...)
-    # model.save(outdir / "model")
 
 def main():
     p = argparse.ArgumentParser(description="Train LSTM stock prediction model")
