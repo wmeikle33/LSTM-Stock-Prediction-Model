@@ -1,7 +1,4 @@
-# scripts/train.py
-
-from lstm_model.train import main
+from stock_lstm.train import main
 
 if __name__ == "__main__":
     main()
-    
