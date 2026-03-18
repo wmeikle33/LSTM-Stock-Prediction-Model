@@ -18,3 +18,11 @@ def mape(y_true, y_pred, eps: float = 1e-8) -> float:
 
     denom = np.maximum(np.abs(y_true), eps)
     return float(np.mean(np.abs((y_true - y_pred) / denom)) * 100.0)
+
+def regression_metrics(y_true, y_pred, last_close=None) -> dict[str, float]:
+    results = {
+        "mae": mae(y_true, y_pred),
+        "rmse": rmse(y_true, y_pred),
+        "mape": mape(y_true, y_pred),
+    }
+    return results
