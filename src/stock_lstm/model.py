@@ -1,15 +1,19 @@
-# src/stock_lstm/model.py
-from tensorflow import keras
-from tensorflow.keras import layers
 
+import keras
+from keras import layers
 
-def build_model(lookback: int, n_features: int = 1) -> keras.Model:
-    model = keras.Sequential(
-        [
-            layers.Input(shape=(lookback, n_features)),
-            layers.LSTM(64),
-            layers.Dense(1),
-        ]
+def build_model(window: int, n_features: int, lstm_units: int = 64, dropout: float = 0.2):
+    inputs = keras.Input(shape=(window, n_features))
+    x = layers.LSTM(lstm_units)(inputs)
+    x = layers.Dropout(dropout)(x)
+    outputs = layers.Dense(1, name="next_close")(x)
+
+    model = keras.Model(inputs, outputs)
+    model.compile(
+        optimizer="adam",
+        loss="mse",
+        metrics=[
+            keras.metrics.MeanAbsoluteError(name="mae"),
+            keras.metrics.RootMeanSquaredError(name="rmse"),
+        ],
     )
-    model.compile(optimizer="adam", loss="mse", metrics=["mae"])
-    return model
