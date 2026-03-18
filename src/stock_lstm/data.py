@@ -1,3 +1,11 @@
-split = int(0.8 * len(X))
-X_tr, y_tr = X[:split], y[:split]
-X_te, y_te = X[split:], y[split:]
+from __future__ import annotations
+from pathlib import Path
+from typing import Optional
+import pandas as pd
+
+def load_csv(path: str | Path) -> pd.DataFrame:
+    return pd.read_csv(path)
+
+def save_csv(df: pd.DataFrame, path: str | Path) -> None:
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(path, index=False)
