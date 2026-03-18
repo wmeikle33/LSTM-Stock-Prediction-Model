@@ -6,11 +6,13 @@ build-backend = "setuptools.build_meta"
 name = "stock-lstm-model"
 version = "0.1.0"
 dependencies = [
-    "numpy",
-    "pandas",
-    "scikit-learn",
-    "matplotlib",
-    "tensorflow"
+  "numpy",
+  "pandas",
+  "scikit-learn",
+  "matplotlib",
+  "keras",
+  "tensorflow",
+  "joblib"
 ]
 
 [project.scripts]
