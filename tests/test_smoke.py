@@ -1,31 +1,43 @@
-import subprocess
-import sys
+import json
+from pathlib import Path
+
+import pandas as pd
 
 
-def run_cmd(*args: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        [sys.executable, *args],
-        text=True,
-        capture_output=True,
-        check=False,
+def test_train_then_predict_smoke(tmp_path, sample_prices_df):
+    # Write sample CSV
+    csv_path = tmp_path / "prices.csv"
+    sample_prices_df.to_csv(csv_path, index=False)
+
+    # Import after writing data, so the module path stays simple
+    from stock_lstm.train import train_model
+    from stock_lstm.predict import predict_from_csv
+
+    outdir = tmp_path / "outputs"
+    outdir.mkdir()
+
+    train_model(
+        csv_path=str(csv_path),
+        outdir=str(outdir),
+        target_col="close",
+        feature_cols=["open", "high", "low", "close", "volume"],
+        window=10,
+        epochs=1,
+        batch_size=8,
     )
 
+    assert (outdir / "model.keras").exists()
+    assert (outdir / "x_scaler.joblib").exists()
+    assert (outdir / "y_scaler.joblib").exists()
+    assert (outdir / "metadata.json").exists()
 
-def test_import_train_module() -> None:
-    __import__("stock_lstm.train")
+    pred_csv = tmp_path / "predictions.csv"
+    result = predict_from_csv(
+        model_dir=str(outdir),
+        input_csv=str(csv_path),
+        output_csv=str(pred_csv),
+    )
 
-
-def test_import_predict_module() -> None:
-    __import__("stock_lstm.predict")
-
-
-def test_train_cli_help() -> None:
-    result = run_cmd("-m", "stock_lstm.train", "--help")
-    assert result.returncode == 0
-    assert "Train LSTM stock prediction model" in result.stdout
-
-
-def test_predict_cli_help() -> None:
-    result = run_cmd("-m", "stock_lstm.predict", "--help")
-    assert result.returncode == 0
-    assert "Predict" in result.stdout
+    assert pred_csv.exists()
+    assert "predicted_close" in result.columns
+    assert len(result) == len(sample_prices_df) - 10
