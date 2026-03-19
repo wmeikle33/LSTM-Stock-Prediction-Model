@@ -1,4 +1,5 @@
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
+import numpy as np
 
 def mae(y_true, y_pred) -> float:
     y_true = np.asarray(y_true)
