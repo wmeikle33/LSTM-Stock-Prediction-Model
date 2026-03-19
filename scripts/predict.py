@@ -1,18 +1,24 @@
 import argparse
-from stock_lstm.predict import predict_from_csv
+from stock_lstm.train import train_model
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model-dir", required=True)
-    parser.add_argument("--input", required=True)
-    parser.add_argument("--output", required=True)
+    parser.add_argument("--data", required=True)
+    parser.add_argument("--outdir", required=True)
+    parser.add_argument("--target", default="close")
+    parser.add_argument("--window", type=int, default=60)
+    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--batch-size", type=int, default=32)
     args = parser.parse_args()
 
-    predict_from_csv(
-        model_dir=args.model_dir,
-        input_csv=args.input,
-        output_csv=args.output,
+    train_model(
+        csv_path=args.data,
+        outdir=args.outdir,
+        target_col=args.target,
+        window=args.window,
+        epochs=args.epochs,
+        batch_size=args.batch_size,
     )
 
 
