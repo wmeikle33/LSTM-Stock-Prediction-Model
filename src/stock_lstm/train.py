@@ -11,6 +11,13 @@ def train(data_path: str, target: str, window: int, horizon: int, epochs: int, o
     print(f"  window={window}, horizon={horizon}, epochs={epochs}")
     print(f"  outdir={outdir}")
 
+def make_run_dir(base: str = "outputs", name: str | None = None) -> Path:
+    ts = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    run_name = name or f"run_{ts}"
+    run_dir = Path(base) / run_name
+    run_dir.mkdir(parents=True, exist_ok=True)
+    return run_dir
+
 def main():
     p = argparse.ArgumentParser(description="Train LSTM stock prediction model")
     p.add_argument("--data", required=True, help="Path to CSV containing price data")
