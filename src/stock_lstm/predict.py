@@ -50,6 +50,17 @@ def main():
     with torch.no_grad():
         pred_close = model(x).squeeze().item()
 
+    torch.save(
+    {
+        "model_state_dict": model.state_dict(),
+        "input_size": input_size,
+        "hidden_size": hidden_size,
+        "num_layers": num_layers,
+        "output_size": 1,
+    },
+    run_dir / "model.pt",
+    )
+
     metrics = {
     "train_loss_final": float(train_losses[-1]),
     "val_loss_final": float(val_losses[-1]),
