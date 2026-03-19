@@ -1,87 +1,43 @@
-DEFAULT_FEATURE_COLS = ["open", "high", "low", "close", "volume"]
+from pathlib import Path
+import json
+import joblib
+import numpy as np
+import pandas as pd
+from tensorflow import keras
 
 
-def parse_args():
-    ap = argparse.ArgumentParser(description="Predict next closing price from stock history")
-    ap.add_argument("--model", required=True, help="Path to trained model checkpoint (.pt)")
-    ap.add_argument("--scaler", required=True, help="Path to fitted scaler (.joblib)")
-    ap.add_argument("--input", required=True, help="CSV containing historical OHLCV data")
-    ap.add_argument("--output", default="predictions.csv", help="Where to save predictions")
-    ap.add_argument("--window", type=int, default=60, help="Lookback window length")
-    ap.add_argument("--hidden-size", type=int, default=64, help="LSTM hidden size")
-    ap.add_argument("--num-layers", type=int, default=2, help="Number of LSTM layers")
-    ap.add_argument("--device", default="cpu", help="cpu or cuda")
-    return ap.parse_args()
+def make_inference_sequences(features: np.ndarray, window: int):
+    X = []
+    for i in range(window, len(features)):
+        X.append(features[i - window:i])
+    return np.array(X)
 
 
-def build_last_window(df: pd.DataFrame, scaler, feature_cols, window: int) -> torch.Tensor:
-    if len(df) < window:
-        raise ValueError(
-            f"Need at least {window} rows for prediction, but got {len(df)}"
-        )
+def predict_from_csv(model_dir: str, input_csv: str, output_csv: str):
+    model_dir = Path(model_dir)
 
-    features = transform_features(df, scaler, feature_cols)
-    last_window = features[-window:]  # shape: (window, n_features)
-    x = torch.tensor(last_window, dtype=torch.float32).unsqueeze(0)  # (1, window, n_features)
-    return x
+    model = keras.models.load_model(model_dir / "model.keras")
+    x_scaler = joblib.load(model_dir / "x_scaler.joblib")
+    y_scaler = joblib.load(model_dir / "y_scaler.joblib")
+    metadata = json.loads((model_dir / "metadata.json").read_text())
 
+    window = metadata["window"]
+    feature_cols = metadata["feature_cols"]
 
-def main():
-    args = parse_args()
-    device = torch.device(args.device if torch.cuda.is_available() or args.device == "cpu" else "cpu")
+    df = pd.read_csv(input_csv)
+    df.columns = [c.lower() for c in df.columns]
+    df = df.dropna().sort_values("date").reset_index(drop=True)
 
-    feature_cols = DEFAULT_FEATURE_COLS
+    raw_features = df[feature_cols].values
+    scaled_features = x_scaler.transform(raw_features)
 
-    df = load_price_data(args.input)
-    scaler = load(args.scaler)
+    X_pred = make_inference_sequences(scaled_features, window)
+    preds_scaled = model.predict(X_pred, verbose=0)
 
-    model = LSTMRegressor(
-        input_size=len(feature_cols),
-        hidden_size=args.hidden_size,
-        num_layers=args.num_layers,
-        output_size=1,
-    )
-    model.load_state_dict(torch.load(args.model, map_location=device))
-    model.to(device)
-    model.eval()
+    preds = y_scaler.inverse_transform(preds_scaled).ravel()
 
-    x = build_last_window(df, scaler, feature_cols, args.window).to(device)
+    result = df.iloc[window:].copy()
+    result["predicted_close"] = preds
+    result.to_csv(output_csv, index=False)
 
-    with torch.no_grad():
-        pred_close = model(x).squeeze().item()
-
-    torch.save(
-    {
-        "model_state_dict": model.state_dict(),
-        "input_size": input_size,
-        "hidden_size": hidden_size,
-        "num_layers": num_layers,
-        "output_size": 1,
-    },
-    run_dir / "model.pt",
-    )
-
-    metrics = {
-    "train_loss_final": float(train_losses[-1]),
-    "val_loss_final": float(val_losses[-1]),
-    "mae": float(mae),
-    "rmse": float(rmse),
-    "mape": float(mape),
-    }
-
-    with open(run_dir / "metrics.json", "w", encoding="utf-8") as f:
-        json.dump(metrics, f, indent=2)
-
-    last_date = pd.to_datetime(df["date"].iloc[-1])
-    out = pd.DataFrame(
-        {
-            "last_date": [last_date],
-            "pred_close": [pred_close],
-        }
-    )
-    out.to_csv(args.output, index=False)
-    print(f"Saved prediction to: {args.output}")
-
-
-if __name__ == "__main__":
-    main()
+    return result
