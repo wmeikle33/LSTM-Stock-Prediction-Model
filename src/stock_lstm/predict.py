@@ -50,6 +50,17 @@ def main():
     with torch.no_grad():
         pred_close = model(x).squeeze().item()
 
+    metrics = {
+    "train_loss_final": float(train_losses[-1]),
+    "val_loss_final": float(val_losses[-1]),
+    "mae": float(mae),
+    "rmse": float(rmse),
+    "mape": float(mape),
+    }
+
+    with open(run_dir / "metrics.json", "w", encoding="utf-8") as f:
+        json.dump(metrics, f, indent=2)
+
     last_date = pd.to_datetime(df["date"].iloc[-1])
     out = pd.DataFrame(
         {
