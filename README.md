@@ -107,14 +107,14 @@ lstm-stock-prediction-model/
 └── README.md
 ```
 
-## Disclaimer
+## Baselines
 
-This project is for educational and research purposes only.
+To evaluate whether the LSTM adds value, the model is compared against:
 
-- It is **not financial advice**.
-- It is **not intended for live trading or investment decisions**.
-- Historical performance shown in this repository does **not guarantee future results**.
-- Any reported performance does **not account for transaction costs, slippage, liquidity constraints, or market impact** unless explicitly stated.
+- **Naive last-close**: predicts next price = last observed close
+- **Moving average**: predicts next price = mean of window
+
+These baselines provide a lower bound for performance.
 
 ## Results
 
@@ -141,5 +141,14 @@ This better simulates real-world deployment conditions.
 - Predicting raw prices may inflate performance compared to predicting returns
 - No transaction costs or trading strategy are modeled
 - Model performance may degrade across different market regimes
+
+## Disclaimer
+
+This project is for educational and research purposes only.
+
+- It is **not financial advice**.
+- It is **not intended for live trading or investment decisions**.
+- Historical performance shown in this repository does **not guarantee future results**.
+- Any reported performance does **not account for transaction costs, slippage, liquidity constraints, or market impact** unless explicitly stated.
 
 Financial markets are complex and inherently unpredictable. Use this code at your own risk.
