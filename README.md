@@ -1,3 +1,16 @@
+# LSTM Stock Price Prediction
+
+Predicts next-day stock closing prices using an LSTM neural network trained on historical OHLCV data, with comparison against simple baselines.
+
+## Problem
+
+Can a sequence model (LSTM) learn temporal patterns in historical stock data
+to predict the next day's closing price more accurately than simple heuristics?
+
+This project frames stock prediction as a supervised time-series regression problem:
+- Input: rolling window of past N days of features
+- Output: next-day closing price
+
 # LSTM Stock Prediction Model
 
 This repository contains a redaction-safe sample of a stock forecasting pipeline built around an LSTM model for time-series prediction.
