@@ -69,7 +69,7 @@ def train_model(
         verbose=1,
     )
 
-       model.save(outdir / "model.keras")
+    model.save(outdir / "model.keras")
     joblib.dump(x_scaler, outdir / "x_scaler.joblib")
     joblib.dump(y_scaler, outdir / "y_scaler.joblib")
 
