@@ -4,6 +4,9 @@ import joblib
 
 from tensorflow import keras
 
+from stock_lstm.baselines import naive_last_close, moving_average
+from stock_lstm.metrics import evaluate_regression
+
 from stock_lstm.data import (
     load_price_data,
     chronological_split,
@@ -63,6 +66,15 @@ def train_model(
         callbacks=callbacks,
         verbose=1,
     )
+
+    y_pred_lstm = model.predict(X_test).ravel()
+    y_pred_naive = naive_last_close(X_test)
+    y_pred_ma = moving_average(X_test)
+    results = {
+    "naive": evaluate_regression(y_test, y_pred_naive),
+    "moving_avg": evaluate_regression(y_test, y_pred_ma),
+    "lstm": evaluate_regression(y_test, y_pred_lstm),
+    }
 
     model.save(outdir / "model.keras")
     joblib.dump(scaler, outdir / "x_scaler.joblib")
