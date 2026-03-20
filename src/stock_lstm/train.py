@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow import keras
+import argparse
 
 from stock_lstm.model import build_model
 
@@ -94,3 +95,26 @@ def train_model(
     (outdir / "metadata.json").write_text(json.dumps(metadata, indent=2))
 
     return history
+
+def main():
+    parser = argparse.ArgumentParser(description="Train the LSTM stock model")
+    parser.add_argument("--data", required=True, help="Path to input CSV")
+    parser.add_argument("--outdir", required=True, help="Directory to save model artifacts")
+    parser.add_argument("--target", default="close", help="Target column name")
+    parser.add_argument("--window", type=int, default=60, help="Sequence length")
+    parser.add_argument("--epochs", type=int, default=10, help="Training epochs")
+    parser.add_argument("--batch-size", type=int, default=32, help="Batch size")
+
+    args = parser.parse_args()
+
+    train_model(
+        csv_path=args.data,
+        outdir=args.outdir,
+        target_col=args.target,
+        window=args.window,
+        epochs=args.epochs,
+        batch_size=args.batch_size,
+    )
+
+if __name__ == "__main__":
+    main()
