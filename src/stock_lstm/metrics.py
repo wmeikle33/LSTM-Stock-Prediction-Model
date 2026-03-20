@@ -1,4 +1,7 @@
 from sklearn.metrics import mean_absolute_error, mean_squared_error, root_mean_squared_error
+import json
+import pandas as pd
+from pathlib import Path
 import numpy as np
 
 def mae(y_true, y_pred) -> float:
@@ -27,3 +30,18 @@ def regression_metrics(y_true, y_pred, last_close=None) -> dict[str, float]:
         "mape": mape(y_true, y_pred),
     }
     return results
+
+def save_eval_artifacts(outdir, y_true, y_pred, metrics):
+    outdir = Path(outdir)
+    outdir.mkdir(parents=True, exist_ok=True)
+
+    with open(outdir / "metrics.json", "w") as f:
+        json.dump(metrics, f, indent=2)
+
+    pd.DataFrame({
+        "y_true": y_true,
+        "y_pred": y_pred,
+    }).to_csv(outdir / "predictions.csv", index=False)
+
+    plot_actual_vs_pred(y_true, y_pred, outdir / "actual_vs_pred.png")
+    plot_residuals(y_true, y_pred, outdir / "residuals.png")
