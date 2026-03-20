@@ -1,26 +1,19 @@
 import argparse
-from stock_lstm.train import train_model
 
+from stock_lstm.predict import predict_from_csv
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--data", required=True)
-    parser.add_argument("--outdir", required=True)
-    parser.add_argument("--target", default="close")
-    parser.add_argument("--window", type=int, default=60)
-    parser.add_argument("--epochs", type=int, default=10)
-    parser.add_argument("--batch-size", type=int, default=32)
+    parser = argparse.ArgumentParser(description="Run inference with a trained LSTM model")
+    parser.add_argument("--model", required=True, help="Directory containing model artifacts")
+    parser.add_argument("--data", required=True, help="Path to input CSV")
+    parser.add_argument("--out", required=True, help="Path to output predictions CSV")
     args = parser.parse_args()
 
-    train_model(
-        csv_path=args.data,
-        outdir=args.outdir,
-        target_col=args.target,
-        window=args.window,
-        epochs=args.epochs,
-        batch_size=args.batch_size,
+    predict_from_csv(
+        model_dir=args.model,
+        input_csv=args.data,
+        output_csv=args.out,
     )
-
 
 if __name__ == "__main__":
     main()
