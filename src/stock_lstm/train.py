@@ -75,9 +75,8 @@ def train_model(
     "moving_avg": evaluate_regression(y_test, y_pred_ma),
     "lstm": evaluate_regression(y_test, y_pred_lstm),
     }
-
-    model.save(outdir / "model.keras")
-    joblib.dump(scaler, outdir / "x_scaler.joblib")
+    for key, item in results.items():
+        save_eval_artifacts(key,y_true, y_pred, item,)
 
     metadata = {
         "window": window,
