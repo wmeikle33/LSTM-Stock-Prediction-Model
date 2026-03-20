@@ -128,12 +128,18 @@ Evaluation on a held-out chronological test set:
 
 The LSTM outperforms both baselines, indicating it captures some temporal structure beyond simple heuristics.
 
-## Baseline
-
-## Evaluation
-
 ## Backtesting
 
+In addition to a single test split, the model can be evaluated using walk-forward validation,
+where training expands over time and predictions are made on future unseen data.
+
+This better simulates real-world deployment conditions.
+
 ## Limitations
+
+- Stock prices are highly noisy and influenced by external factors not included in the model
+- Predicting raw prices may inflate performance compared to predicting returns
+- No transaction costs or trading strategy are modeled
+- Model performance may degrade across different market regimes
 
 Financial markets are complex and inherently unpredictable. Use this code at your own risk.
