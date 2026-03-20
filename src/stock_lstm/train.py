@@ -1,21 +1,15 @@
 from pathlib import Path
 import json
 import joblib
-import numpy as np
-import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
+
 from tensorflow import keras
-import argparse
 
+from stock_lstm.data import (
+    load_price_data,
+    chronological_split,
+    prepare_split_sequences,
+)
 from stock_lstm.model import build_model
-
-
-def make_sequences(features: np.ndarray, target: np.ndarray, window: int):
-    X, y = [], []
-    for i in range(window, len(features)):
-        X.append(features[i - window:i])
-        y.append(target[i])
-    return np.array(X), np.array(y)
 
 
 def train_model(
@@ -24,44 +18,31 @@ def train_model(
     target_col: str = "close",
     feature_cols=None,
     window: int = 60,
+    horizon: int = 1,
+    train_frac: float = 0.7,
+    val_frac: float = 0.15,
     epochs: int = 10,
     batch_size: int = 32,
 ):
     outdir = Path(outdir)
     outdir.mkdir(parents=True, exist_ok=True)
 
-    df = pd.read_csv(csv_path)
-    df.columns = [c.lower() for c in df.columns]
-
-    target_col = target_col.lower()
     if feature_cols is None:
         feature_cols = ["open", "high", "low", "close", "volume"]
+
+    target_col = target_col.lower()
     feature_cols = [c.lower() for c in feature_cols]
 
-    df = df.dropna().sort_values("date").reset_index(drop=True)
+    df = load_price_data(csv_path)
+    split = chronological_split(df, train_frac=train_frac, val_frac=val_frac)
 
-    # chronological split
-    split_idx = int(len(df) * 0.8)
-    train_df = df.iloc[:split_idx].copy()
-    val_df = df.iloc[split_idx:].copy()
-
-    x_scaler = MinMaxScaler()
-    y_scaler = MinMaxScaler()
-
-    train_X_raw = train_df[feature_cols].values
-    val_X_raw = val_df[feature_cols].values
-
-    train_y_raw = train_df[[target_col]].values
-    val_y_raw = val_df[[target_col]].values
-
-    train_X_scaled = x_scaler.fit_transform(train_X_raw)
-    val_X_scaled = x_scaler.transform(val_X_raw)
-
-    train_y_scaled = y_scaler.fit_transform(train_y_raw).ravel()
-    val_y_scaled = y_scaler.transform(val_y_raw).ravel()
-
-    X_train, y_train = make_sequences(train_X_scaled, train_y_scaled, window)
-    X_val, y_val = make_sequences(val_X_scaled, val_y_scaled, window)
+    scaler, X_train, y_train, X_val, y_val, X_test, y_test = prepare_split_sequences(
+        split=split,
+        feature_cols=feature_cols,
+        target_col=target_col,
+        window=window,
+        horizon=horizon,
+    )
 
     model = build_model(window=window, n_features=len(feature_cols))
 
@@ -84,17 +65,23 @@ def train_model(
     )
 
     model.save(outdir / "model.keras")
-    joblib.dump(x_scaler, outdir / "x_scaler.joblib")
-    joblib.dump(y_scaler, outdir / "y_scaler.joblib")
+    joblib.dump(scaler, outdir / "x_scaler.joblib")
 
     metadata = {
         "window": window,
+        "horizon": horizon,
         "feature_cols": feature_cols,
         "target_col": target_col,
+        "train_frac": train_frac,
+        "val_frac": val_frac,
     }
     (outdir / "metadata.json").write_text(json.dumps(metadata, indent=2))
 
-    return history
+    return {
+        "history": history.history,
+        "X_test": X_test,
+        "y_test": y_test,
+    }
 
 def main():
     parser = argparse.ArgumentParser(description="Train the LSTM stock model")
