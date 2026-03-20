@@ -62,10 +62,15 @@ def chronological_split(
 
     return SplitData(train_df=train_df, val_df=val_df, test_df=test_df)
 
-
 def fit_feature_scaler(train_df: pd.DataFrame, feature_cols: List[str]) -> MinMaxScaler:
     scaler = MinMaxScaler()
     scaler.fit(train_df[feature_cols].values)
+    return scaler
+
+
+def fit_target_scaler(train_df: pd.DataFrame, target_col: str) -> MinMaxScaler:
+    scaler = MinMaxScaler()
+    scaler.fit(train_df[[target_col]].values)
     return scaler
 
 
@@ -76,6 +81,13 @@ def transform_features(
 ) -> np.ndarray:
     return scaler.transform(df[feature_cols].values)
 
+
+def transform_target(
+    df: pd.DataFrame,
+    scaler: MinMaxScaler,
+    target_col: str,
+) -> np.ndarray:
+    return scaler.transform(df[[target_col]].values).astype(np.float32).ravel()
 
 def make_sequences(
     feature_array: np.ndarray,
@@ -94,7 +106,6 @@ def make_sequences(
     for start_idx in range(max_start):
         end_idx = start_idx + window
         target_idx = end_idx + horizon - 1
-
         X.append(feature_array[start_idx:end_idx])
         y.append(target_array[target_idx])
 
@@ -111,18 +122,20 @@ def prepare_split_sequences(
     window: int,
     horizon: int = 1,
 ):
-    scaler = fit_feature_scaler(split.train_df, feature_cols)
+    x_scaler = fit_feature_scaler(split.train_df, feature_cols)
+    y_scaler = fit_target_scaler(split.train_df, target_col)
 
-    X_train_features = transform_features(split.train_df, scaler, feature_cols)
-    X_val_features = transform_features(split.val_df, scaler, feature_cols)
-    X_test_features = transform_features(split.test_df, scaler, feature_cols)
+    X_train_features = transform_features(split.train_df, x_scaler, feature_cols)
+    X_val_features = transform_features(split.val_df, x_scaler, feature_cols)
+    X_test_features = transform_features(split.test_df, x_scaler, feature_cols)
 
-    y_train_raw = split.train_df[target_col].values.astype(np.float32)
-    y_val_raw = split.val_df[target_col].values.astype(np.float32)
-    y_test_raw = split.test_df[target_col].values.astype(np.float32)
+    y_train_scaled = transform_target(split.train_df, y_scaler, target_col)
+    y_val_scaled = transform_target(split.val_df, y_scaler, target_col)
+    y_test_scaled = transform_target(split.test_df, y_scaler, target_col)
 
-    X_train, y_train = make_sequences(X_train_features, y_train_raw, window, horizon)
-    X_val, y_val = make_sequences(X_val_features, y_val_raw, window, horizon)
-    X_test, y_test = make_sequences(X_test_features, y_test_raw, window, horizon)
+    X_train, y_train = make_sequences(X_train_features, y_train_scaled, window, horizon)
+    X_val, y_val = make_sequences(X_val_features, y_val_scaled, window, horizon)
+    X_test, y_test = make_sequences(X_test_features, y_test_scaled, window, horizon)
 
-    return scaler, X_train, y_train, X_val, y_val, X_test, y_test
+    return x_scaler, y_scaler, X_train, y_train, X_val, y_val, X_test, y_test
+
