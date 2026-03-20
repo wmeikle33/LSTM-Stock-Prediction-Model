@@ -76,7 +76,13 @@ def train_model(
     "lstm": evaluate_regression(y_test, y_pred_lstm),
     }
     for key, item in results.items():
-        save_eval_artifacts(key,y_true, y_pred, item,)
+        if key == "naive":
+            save_eval_artifacts(key,y_test, y_pred_naive, item)
+        elif key == "moving_avg":
+            save_eval_artifacts(key,y_test, y_pred_ma, item)
+        elif key == "lstm":
+            save_eval_artifacts(key,y_test, y_pred_lstm, item)
+            
 
     metadata = {
         "window": window,
