@@ -6,6 +6,7 @@ from tensorflow import keras
 
 from stock_lstm.baselines import naive_last_close, moving_average
 from stock_lstm.metrics import save_eval_artifacts
+from stock_lstm.visualization import plot_actual_vs_pred
 
 from stock_lstm.data import (
     load_price_data,
@@ -78,10 +79,13 @@ def train_model(
     for key, item in results.items():
         if key == "naive":
             save_eval_artifacts(key,y_test, y_pred_naive, item)
+            plot_actual_vs_pred(y_test, y_pred_naive, outdir / "actual_vs_pred.png")
         elif key == "moving_avg":
             save_eval_artifacts(key,y_test, y_pred_ma, item)
+            plot_actual_vs_pred(y_test, y_pred_ma, outdir / "actual_vs_pred.png")
         elif key == "lstm":
             save_eval_artifacts(key,y_test, y_pred_lstm, item)
+            plot_actual_vs_pred(y_test, y_pred_lstm, outdir / "actual_vs_pred.png")
             
 
     metadata = {
