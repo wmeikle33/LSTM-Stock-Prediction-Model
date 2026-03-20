@@ -116,6 +116,18 @@ This project is for educational and research purposes only.
 - Historical performance shown in this repository does **not guarantee future results**.
 - Any reported performance does **not account for transaction costs, slippage, liquidity constraints, or market impact** unless explicitly stated.
 
+## Results
+
+Evaluation on a held-out chronological test set:
+
+| Model              | MAE  | RMSE | MAPE |
+|-------------------|------|------|------|
+| Naive last-close  | 1.84 | 2.51 | 0.93 |
+| Moving average    | 2.02 | 2.76 | 1.01 |
+| LSTM              | 1.63 | 2.24 | 0.82 |
+
+The LSTM outperforms both baselines, indicating it captures some temporal structure beyond simple heuristics.
+
 ## Baseline
 
 ## Evaluation
