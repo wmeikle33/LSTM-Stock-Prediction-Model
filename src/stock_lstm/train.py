@@ -6,7 +6,7 @@ from tensorflow import keras
 
 from stock_lstm.baselines import naive_last_close, moving_average
 from stock_lstm.metrics import save_eval_artifacts
-from stock_lstm.visualization import plot_actual_vs_pred
+from stock_lstm.visualization import plot_actual_vs_pred, plot_residuals
 
 from stock_lstm.data import (
     load_price_data,
