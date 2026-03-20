@@ -80,12 +80,15 @@ def train_model(
         if key == "naive":
             save_eval_artifacts(key,y_test, y_pred_naive, item)
             plot_actual_vs_pred(y_test, y_pred_naive, outdir / "actual_vs_pred.png")
+            plot_residuals(y_test, y_pred_naive, outdir / "residual.png")
         elif key == "moving_avg":
             save_eval_artifacts(key,y_test, y_pred_ma, item)
             plot_actual_vs_pred(y_test, y_pred_ma, outdir / "actual_vs_pred.png")
+            plot_residuals(y_test, y_pred_ma, outdir / "residual.png")
         elif key == "lstm":
             save_eval_artifacts(key,y_test, y_pred_lstm, item)
             plot_actual_vs_pred(y_test, y_pred_lstm, outdir / "actual_vs_pred.png")
+            plot_residuals(y_test, y_pred_lstm, outdir / "residual.png")
             
 
     metadata = {
