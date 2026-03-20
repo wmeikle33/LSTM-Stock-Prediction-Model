@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
 import joblib
+import argparse
 
 from tensorflow import keras
 
@@ -40,7 +41,7 @@ def train_model(
     df = load_price_data(csv_path)
     split = chronological_split(df, train_frac=train_frac, val_frac=val_frac)
 
-    scaler, X_train, y_train, X_val, y_val, X_test, y_test = prepare_split_sequences(
+    x_scaler, y_scaler, X_train, y_train, X_val, y_val, X_test, y_test = prepare_split_sequences(
         split=split,
         feature_cols=feature_cols,
         target_col=target_col,
@@ -68,28 +69,31 @@ def train_model(
         verbose=1,
     )
 
-    y_pred_lstm = model.predict(X_test).ravel()
+       model.save(outdir / "model.keras")
+    joblib.dump(x_scaler, outdir / "x_scaler.joblib")
+    joblib.dump(y_scaler, outdir / "y_scaler.joblib")
+
+    y_pred_lstm_scaled = model.predict(X_test, verbose=0)
+
+    y_test_actual = y_scaler.inverse_transform(y_test.reshape(-1, 1)).ravel()
+    y_pred_lstm = y_scaler.inverse_transform(y_pred_lstm_scaled).ravel()
+
     y_pred_naive = naive_last_close(X_test)
     y_pred_ma = moving_average(X_test)
+
     results = {
-    "naive": evaluate_regression(y_test, y_pred_naive),
-    "moving_avg": evaluate_regression(y_test, y_pred_ma),
-    "lstm": evaluate_regression(y_test, y_pred_lstm),
+        "naive": regression_metrics(y_test_actual, y_pred_naive),
+        "moving_avg": regression_metrics(y_test_actual, y_pred_ma),
+        "lstm": regression_metrics(y_test_actual, y_pred_lstm),
     }
-    for key, item in results.items():
-        if key == "naive":
-            save_eval_artifacts(key,y_test, y_pred_naive, item)
-            plot_actual_vs_pred(y_test, y_pred_naive, outdir / "actual_vs_pred.png")
-            plot_residuals(y_test, y_pred_naive, outdir / "residual.png")
-        elif key == "moving_avg":
-            save_eval_artifacts(key,y_test, y_pred_ma, item)
-            plot_actual_vs_pred(y_test, y_pred_ma, outdir / "actual_vs_pred.png")
-            plot_residuals(y_test, y_pred_ma, outdir / "residual.png")
-        elif key == "lstm":
-            save_eval_artifacts(key,y_test, y_pred_lstm, item)
-            plot_actual_vs_pred(y_test, y_pred_lstm, outdir / "actual_vs_pred.png")
-            plot_residuals(y_test, y_pred_lstm, outdir / "residual.png")
-            
+
+    for key, preds in {
+        "naive": y_pred_naive,
+        "moving_avg": y_pred_ma,
+        "lstm": y_pred_lstm,
+    }.items():
+        metrics = results[key]
+        save_eval_artifacts(outdir / key, y_test_actual, preds, metrics)
 
     metadata = {
         "window": window,
@@ -104,7 +108,8 @@ def train_model(
     return {
         "history": history.history,
         "X_test": X_test,
-        "y_test": y_test,
+        "y_test": y_test_actual,
+        "y_pred": y_pred_lstm,
     }
 
 def main():
