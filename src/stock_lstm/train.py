@@ -120,6 +120,7 @@ def main():
     parser.add_argument("--window", type=int, default=60, help="Sequence length")
     parser.add_argument("--epochs", type=int, default=10, help="Training epochs")
     parser.add_argument("--batch-size", type=int, default=32, help="Batch size")
+    parser.add_argument("--horizon", type=int, default=32, help="Horizon"
 
     args = parser.parse_args()
 
@@ -130,6 +131,7 @@ def main():
         window=args.window,
         epochs=args.epochs,
         batch_size=args.batch_size,
+        horizon=args.horizon
     )
 
 if __name__ == "__main__":
