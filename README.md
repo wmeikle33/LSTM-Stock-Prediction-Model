@@ -77,7 +77,7 @@ pip install -U pip
 pip install -e ".[dev]"
 
 python -m scripts.train \
-  --data sample_data/prices.csv \
+  --data sample_data/train_prices.csv \
   --target Close \
   --window 60 \
   --horizon 1 \
@@ -86,7 +86,7 @@ python -m scripts.train \
 
 python -m scripts.predict \
   --model outputs/model \
-  --data sample_data/prices.csv \
+  --data sample_data/train_prices.csv \
   --outdir outputs
 ```
 
