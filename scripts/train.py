@@ -10,6 +10,7 @@ def main():
     parser.add_argument("--window", type=int, default=60)
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--batch-size", type=int, default=32)
+    parser.add_argument("--horizon", type=int, default=1)
     args = parser.parse_args()
 
     train_model(
@@ -19,6 +20,7 @@ def main():
         window=args.window,
         epochs=args.epochs,
         batch_size=args.batch_size,
+        horizon=args.horizon,
     )
 
 
