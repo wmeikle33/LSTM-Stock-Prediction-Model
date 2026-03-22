@@ -68,15 +68,16 @@ def test_make_sequences_shapes_and_alignment():
 def test_prepare_split_sequences_returns_usable_arrays(sample_prices_df):
     split = chronological_split(sample_prices_df, train_frac=0.7, val_frac=0.15)
 
-    scaler, X_train, y_train, X_val, y_val, X_test, y_test = prepare_split_sequences(
-        split=split,
-        feature_cols=["open", "high", "low", "close", "volume"],
-        target_col="close",
-        window=10,
-        horizon=1,
-    )
+    x_scaler, y_scaler, X_train, y_train, X_val, y_val, X_test, y_test = prepare_split_sequences(
+    split=split,
+    feature_cols=["open", "high", "low", "close", "volume"],
+    target_col="close",
+    window=10,
+    horizon=1,
+)
 
-    assert scaler is not None
+    assert x_scaler is not None
+    assert y_scaler is not None
     assert X_train.ndim == 3
     assert X_val.ndim == 3
     assert X_test.ndim == 3
