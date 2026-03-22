@@ -76,6 +76,18 @@ source .venv/bin/activate
 pip install -U pip
 pip install -e ".[dev]"
 
+python scripts/generate_data.py \
+  --out sample_data/prices_train.csv \
+  --n 300 \
+  --start-date 2020-01-01 \
+  --seed 42
+
+python scripts/generate_data.py \
+  --out sample_data/prices_test.csv \
+  --n 100 \
+  --start-date 2021-01-01 \
+  --seed 123
+
 python -m scripts.train \
   --data sample_data/prices_train.csv \
   --target Close \
