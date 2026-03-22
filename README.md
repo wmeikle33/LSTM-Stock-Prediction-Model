@@ -84,7 +84,7 @@ python scripts/generate_data.py \
 
 python scripts/generate_data.py \
   --out sample_data/prices_test.csv \
-  --n 100 \
+  --n 300 \
   --start-date 2021-01-01 \
   --seed 123
 
