@@ -91,7 +91,7 @@ python scripts/generate_data.py \
 python -m scripts.train \
   --data sample_data/prices_train.csv \
   --target Close \
-  --window 60 \
+  --window 10 \
   --horizon 1 \
   --epochs 10 \
   --outdir outputs
