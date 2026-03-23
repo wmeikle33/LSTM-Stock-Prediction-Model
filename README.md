@@ -99,7 +99,7 @@ python -m scripts.train \
 python -m scripts.predict \
   --model outputs/model \
   --data sample_data/prices_test.csv \
-  --outdir outputs
+  --outdir outputs/predictions.csv
 ```
 
 This repository is a public, redaction‑safe sample of a company program that employs a LSTM based neural network to analyze time series data related to stocks. It demonstrates sample code without exposing any proprietary logic.
