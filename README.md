@@ -112,7 +112,6 @@ This repository is a public, redaction‑safe sample of a company program that e
 lstm-stock-prediction-model/
 ├── src/                   # reusable code (data, features, model)
 ├── scripts/               # CLI entrypoints: train/predict
-├── notebooks/             # original notebook + exported .py
 ├── sample_data             # place raw data here (gitignored)
 ├── tests/                 # add unit tests if needed
 ├── requirements.txt
