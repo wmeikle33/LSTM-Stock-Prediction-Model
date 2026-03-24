@@ -11,7 +11,7 @@ This project frames stock prediction as a supervised time-series regression prob
 - Input: rolling window of past N days of features
 - Output: next-day closing price
 
-# LSTM Stock Prediction Model
+## Summary
 
 This repository contains a redaction-safe sample of a stock forecasting pipeline built around an LSTM model for time-series prediction.
 
