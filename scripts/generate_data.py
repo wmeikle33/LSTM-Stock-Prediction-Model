@@ -10,19 +10,13 @@ def generate_data(input, n, start_date, seed):
 
     returns = np.random.normal(0.0005, 0.02, n)
     price = 100 * np.exp(np.cumsum(returns))
-    if input == 'train':
-        df = pd.DataFrame({"date": dates})
-        df["close"] = price
-        df["open"] = df["close"].shift(1).fillna(df["close"])
-        df["high"] = df[["open", "close"]].max(axis=1) * (1 + np.random.rand(n) * 0.01)
-        df["low"] = df[["open", "close"]].min(axis=1) * (1 - np.random.rand(n) * 0.01)
-        df["volume"] = np.random.randint(1000, 10000, n)
-        return df[["date", "open", "high", "low", "close", "volume"]]
-    elif input == 'test':
-        df = pd.DataFrame({"date": dates})
-        df["close"] = price
-        return df[["date", "close"]]
-        
+    df = pd.DataFrame({"date": dates})
+    df["close"] = price
+    df["open"] = df["close"].shift(1).fillna(df["close"])
+    df["high"] = df[["open", "close"]].max(axis=1) * (1 + np.random.rand(n) * 0.01)
+    df["low"] = df[["open", "close"]].min(axis=1) * (1 - np.random.rand(n) * 0.01)
+    df["volume"] = np.random.randint(1000, 10000, n)
+    return df[["date", "open", "high", "low", "close", "volume"]]
 
 
 def main():
