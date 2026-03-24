@@ -23,7 +23,7 @@ def predict_from_csv(model_dir: str, input_csv: str, output_csv: str):
     metadata = json.loads((model_dir / "metadata.json").read_text())
 
     window = metadata["window"]
-    feature_cols = ['date','close']
+    feature_cols = ['close']
 
     df = pd.read_csv(input_csv)
     df.columns = [c.lower() for c in df.columns]
