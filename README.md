@@ -94,7 +94,7 @@ python -m scripts.train \
   --window 10 \
   --horizon 1 \
   --epochs 10 \
-  --outdir outputs
+  --outdir outputs/model
 
 python -m scripts.predict \
   --model outputs/model \
